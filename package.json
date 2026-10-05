@@ -1,0 +1,23 @@
+{
+  "name": "bjjquebecenfants-landing",
+  "version": "1.0.0",
+  "description": "Landing BJJ Québec Enfants — Astro statique, Cloudflare Pages.",
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@astrojs/cloudflare": "^13.6.0",
+    "astro": "^6.4.2"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "typescript": "^5.6.0"
+  }
+}

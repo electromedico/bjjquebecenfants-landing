@@ -1,0 +1,122 @@
+name: Preview Deployment
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
+
+concurrency:
+  group: preview-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+# Repo de usuario: ubuntu-latest (gratis al ser repo público).
+jobs:
+  preview:
+    if: github.event.action != 'closed'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Deploy preview to Cloudflare Pages
+        id: deploy
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy dist --project-name=${{ github.event.repository.name }} --branch=preview
+
+      - name: Comment preview URL on PR
+        uses: actions/github-script@v7
+        env:
+          ALIAS_URL: ${{ steps.deploy.outputs.pages-deployment-alias-url }}
+          DEPLOYMENT_URL: ${{ steps.deploy.outputs.deployment-url }}
+        with:
+          script: |
+            const marker = '<!-- cloudflare-preview-url -->';
+            const url = process.env.ALIAS_URL || process.env.DEPLOYMENT_URL;
+            const branch = '${{ github.head_ref }}';
+            const sha = '${{ github.sha }}'.slice(0, 7);
+
+            const commentBody = [
+              marker,
+              '## Preview Deployment',
+              '',
+              'La preview está lista 🚀',
+              '',
+              `**URL:** ${url}`,
+              '',
+              `*Branch: \`${branch}\` — commit: \`${sha}\`*`,
+            ].join('\n');
+
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+
+            const existing = comments.find(c => c.body.includes(marker));
+
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body: commentBody,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: commentBody,
+              });
+            }
+
+  cleanup:
+    if: github.event.action == 'closed'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Delete Cloudflare Pages preview deployments
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CF_PAGES_PROJECT_NAME: ${{ github.event.repository.name }}
+          BRANCH: preview
+        run: |
+          echo "Fetching deployments for branch: $BRANCH"
+
+          DEPLOYMENTS=$(curl -s \
+            -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+            "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/pages/projects/$CF_PAGES_PROJECT_NAME/deployments?per_page=25" \
+            | jq -r ".result[] | select(.deployment_trigger.metadata.branch == \"$BRANCH\") | .id")
+
+          if [ -z "$DEPLOYMENTS" ]; then
+            echo "No preview deployments found for branch $BRANCH"
+            exit 0
+          fi
+
+          for DEPLOYMENT_ID in $DEPLOYMENTS; do
+            echo "Deleting deployment: $DEPLOYMENT_ID"
+            curl -s -X DELETE \
+              -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+              "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/pages/projects/$CF_PAGES_PROJECT_NAME/deployments/$DEPLOYMENT_ID?force=true"
+          done
+
+          echo "Cleanup complete for branch $BRANCH"

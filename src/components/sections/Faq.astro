@@ -1,0 +1,94 @@
+---
+const faqs = [
+  {
+    q: 'Mon enfant n\'a jamais fait de sport de combat. Ça va aller ?',
+    a: 'Oui : la majorité commence sans aucune expérience. Les premières semaines sont axées sur les chutes, les jeux et les positions de base — personne n\'est lancé dans le vide.',
+  },
+  {
+    q: 'Faut-il acheter un kimono tout de suite ?',
+    a: 'Non. Pour le cours d\'essai, on prête la tenue. Si votre enfant continue, on vous guidera pour choisir un kimono adapté (comptez environ 60–90 $).',
+  },
+  {
+    q: 'Est-ce que les enfants se font mal ?',
+    a: 'Le jiu-jitsu est un sport de contrôle sans frappe. Les chutes s\'apprennent dès le début, le sparring est léger et toujours supervisé. Comme tout sport, les petits bobos existent — les blessures sérieuses sont rares.',
+  },
+  {
+    q: 'Les parents peuvent-ils assister aux cours ?',
+    a: 'Bien sûr. Vous êtes les bienvenus à regarder depuis l\'espace prévu à cet effet, surtout les premières semaines.',
+  },
+  {
+    q: 'Combien ça coûte ?',
+    a: 'Ça dépend de la formule (1 ou 2 cours par semaine). Écrivez-nous via le formulaire : on vous envoie la grille tarifaire sans engagement, et le premier cours reste gratuit.',
+  },
+];
+---
+
+<section class="section" id="faq">
+  <div class="container faq-grid">
+    <div>
+      <p class="eyebrow">FAQ</p>
+      <h2 class="h-1" style="margin-top: 14px;">Les questions des parents.</h2>
+      <p class="lede" style="margin-top: 16px; font-size: 17px;">
+        Une autre question ? Posez-la directement dans le formulaire de contact.
+      </p>
+    </div>
+    <div class="faq-list">
+      {faqs.map((f) => (
+        <details>
+          <summary>{f.q}</summary>
+          <p>{f.a}</p>
+        </details>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .faq-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.4fr;
+    gap: clamp(32px, 5vw, 72px);
+    align-items: start;
+  }
+  .faq-list details {
+    border-bottom: 1px solid var(--line-strong);
+  }
+  .faq-list details:first-child {
+    border-top: 1px solid var(--line-strong);
+  }
+  .faq-list summary {
+    cursor: pointer;
+    font-family: var(--font-display);
+    font-weight: 650;
+    font-size: 18px;
+    padding: 20px 8px 20px 0;
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 16px;
+  }
+  .faq-list summary::-webkit-details-marker {
+    display: none;
+  }
+  .faq-list summary::after {
+    content: '+';
+    font-weight: 400;
+    font-size: 24px;
+    color: var(--accent);
+    flex-shrink: 0;
+  }
+  .faq-list details[open] summary::after {
+    content: '–';
+  }
+  .faq-list details p {
+    color: var(--ink-2);
+    padding: 0 8px 22px 0;
+    max-width: 58ch;
+  }
+  @media (max-width: 860px) {
+    .faq-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

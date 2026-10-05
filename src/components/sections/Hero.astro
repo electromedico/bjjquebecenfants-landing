@@ -1,0 +1,101 @@
+---
+---
+
+<section class="hero" id="haut">
+  <div class="container hero-grid">
+    <div class="hero-main">
+      <p class="eyebrow">Jiu-jitsu brésilien · 4 à 12 ans · Québec</p>
+      <h1 class="h-display">Des enfants confiants, sur le tapis comme ailleurs.</h1>
+      <p class="lede">
+        Cours de jiu-jitsu brésilien pensés pour les enfants : respect, discipline
+        et plaisir de bouger — sans coups, sans pression, à leur rythme.
+      </p>
+      <div class="hero-ctas">
+        <a href="#contact" class="btn btn-accent">Réserver un cours d'essai gratuit</a>
+        <a href="#programmes" class="btn btn-ghost">Voir les programmes</a>
+      </div>
+    </div>
+    <aside class="hero-facts" aria-label="En bref">
+      <dl>
+        <div>
+          <dt>Âges</dt>
+          <dd>4–12 ans, groupes par âge</dd>
+        </div>
+        <div>
+          <dt>Essai</dt>
+          <dd>Premier cours gratuit</dd>
+        </div>
+        <div>
+          <dt>Tenue</dt>
+          <dd>Prêtée pour l'essai</dd>
+        </div>
+        <div>
+          <dt>Parents</dt>
+          <dd>Bienvenus à regarder</dd>
+        </div>
+      </dl>
+    </aside>
+  </div>
+</section>
+
+<style>
+  .hero {
+    padding-block: clamp(48px, 6vw, 88px) clamp(40px, 5vw, 72px);
+    border-bottom: 1px solid var(--line);
+  }
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr;
+    gap: clamp(32px, 5vw, 72px);
+    align-items: end;
+  }
+  .hero-main .eyebrow {
+    display: block;
+    margin-bottom: 18px;
+  }
+  .hero-main .lede {
+    margin-top: 22px;
+  }
+  .hero-ctas {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 30px;
+  }
+  .hero-facts {
+    border-left: 2px solid var(--accent);
+    padding-left: 24px;
+  }
+  .hero-facts dl {
+    margin: 0;
+    display: grid;
+    gap: 16px;
+  }
+  .hero-facts dt {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+  }
+  .hero-facts dd {
+    margin: 2px 0 0;
+    font-family: var(--font-display);
+    font-weight: 650;
+    font-size: 17px;
+  }
+  @media (max-width: 860px) {
+    .hero-grid {
+      grid-template-columns: 1fr;
+    }
+    .hero-facts {
+      border-left: none;
+      border-top: 2px solid var(--accent);
+      padding-left: 0;
+      padding-top: 20px;
+    }
+    .hero-facts dl {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+</style>

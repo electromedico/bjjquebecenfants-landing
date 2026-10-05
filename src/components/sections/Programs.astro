@@ -1,0 +1,83 @@
+---
+const groups = [
+  {
+    num: '01',
+    ages: '4–6 ans',
+    name: 'Petits Tigres',
+    text: 'Motricité, écoute et respect des consignes à travers des jeux qui posent — sans qu\'ils s\'en rendent compte — les bases du jiu-jitsu.',
+  },
+  {
+    num: '02',
+    ages: '7–9 ans',
+    name: 'Kids',
+    text: 'Positions, contrôles et premières soumissions en douceur. On y apprend à persévérer, à perdre sans se décourager et à aider son partenaire.',
+  },
+  {
+    num: '03',
+    ages: '10–12 ans',
+    name: 'Juniors',
+    text: 'Technique complète, transitions et sparring léger encadré. Le groupe qui prépare, pour ceux qui veulent, la transition vers les cours ados.',
+  },
+];
+---
+
+<section class="section" id="programmes">
+  <div class="container">
+    <p class="eyebrow">Programmes</p>
+    <h2 class="h-1" style="margin-top: 14px; max-width: 16ch;">Un groupe pour chaque âge, un rythme pour chacun.</h2>
+    <div class="program-rows">
+      {groups.map((g) => (
+        <article class="program-row">
+          <span class="program-num" aria-hidden="true">{g.num}</span>
+          <div class="program-body">
+            <p class="program-ages">{g.ages}</p>
+            <h3 class="h-3">{g.name}</h3>
+            <p>{g.text}</p>
+          </div>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .program-rows {
+    margin-top: 40px;
+    border-top: 1px solid var(--line-strong);
+  }
+  .program-row {
+    display: grid;
+    grid-template-columns: 110px 1fr;
+    gap: 24px;
+    padding-block: 30px;
+    border-bottom: 1px solid var(--line-strong);
+  }
+  .program-num {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(40px, 5vw, 60px);
+    line-height: 1;
+    color: var(--accent);
+  }
+  .program-ages {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+    margin-bottom: 6px;
+  }
+  .program-body h3 {
+    margin-bottom: 8px;
+  }
+  .program-body p:last-child {
+    color: var(--ink-2);
+    max-width: 62ch;
+  }
+  @media (max-width: 640px) {
+    .program-row {
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+  }
+</style>

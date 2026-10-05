@@ -1,0 +1,26 @@
+---
+import Layout from '@/components/layout/Layout.astro';
+import Header from '@/components/layout/Header.astro';
+import Footer from '@/components/layout/Footer.astro';
+import Hero from '@/components/sections/Hero.astro';
+import Programs from '@/components/sections/Programs.astro';
+import Why from '@/components/sections/Why.astro';
+import Faq from '@/components/sections/Faq.astro';
+import ContactForm from '@/components/sections/ContactForm.astro';
+---
+
+<Layout
+  title="BJJ Québec Enfants — Jiu-jitsu brésilien pour enfants à Québec"
+  description="Cours de jiu-jitsu brésilien pour enfants de 4 à 12 ans à Québec. Premier cours d'essai gratuit, tenue prêtée, parents bienvenus."
+  lang="fr"
+>
+  <Header />
+  <main id="main-content">
+    <Hero />
+    <Programs />
+    <Why />
+    <Faq />
+    <ContactForm />
+  </main>
+  <Footer />
+</Layout>

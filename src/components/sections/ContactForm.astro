@@ -1,0 +1,237 @@
+---
+const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? '';
+---
+
+{turnstileSiteKey && (
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onloadTurnstileCallback" async defer></script>
+)}
+
+<section class="section contact" id="contact">
+  <div class="container contact-grid">
+    <div>
+      <p class="eyebrow">Contact</p>
+      <h2 class="h-1" style="margin-top: 14px;">Réservez le cours d'essai gratuit.</h2>
+      <p class="lede" style="margin-top: 16px; font-size: 17px;">
+        Laissez-nous vos coordonnées et l'âge de votre enfant : on vous répond
+        sous 24 h ouvrables pour planifier l'essai.
+      </p>
+      <p class="contact-alt">Québec, Canada — réponse en français ou en anglais.</p>
+    </div>
+
+    <div class="contact-card">
+      <form id="contact-form" novalidate>
+        <div class="form-grid">
+          <div class="field">
+            <label for="cf-name">Votre nom</label>
+            <input id="cf-name" type="text" name="name" autocomplete="name" required />
+          </div>
+          <div class="field">
+            <label for="cf-email">Courriel</label>
+            <input id="cf-email" type="email" name="email" autocomplete="email" required />
+          </div>
+          <div class="field">
+            <label for="cf-phone">Téléphone <span class="field-opt">(optionnel)</span></label>
+            <input id="cf-phone" type="tel" name="phone" autocomplete="tel" />
+          </div>
+          <div class="field">
+            <label for="cf-age">Âge de l'enfant</label>
+            <select id="cf-age" name="childAge" required>
+              <option value="">Choisir…</option>
+              <option value="4-6">4–6 ans</option>
+              <option value="7-9">7–9 ans</option>
+              <option value="10-12">10–12 ans</option>
+              <option value="13+">13 ans et +</option>
+            </select>
+          </div>
+          <div class="field span-2">
+            <label for="cf-message">Message <span class="field-opt">(optionnel)</span></label>
+            <textarea id="cf-message" name="message" rows="4"></textarea>
+          </div>
+          {turnstileSiteKey && (
+            <div class="span-2">
+              <div class="turnstile-wrapper">
+                <div id="cf-turnstile-container" data-sitekey={turnstileSiteKey} data-theme="light"></div>
+              </div>
+              <p class="form-error" id="cf-turnstile-error" hidden>Veuillez compléter la vérification anti-robot.</p>
+            </div>
+          )}
+          <div class="span-2">
+            <button type="submit" class="btn btn-accent contact-submit">Envoyer la demande</button>
+            <p class="form-error" id="cf-error" hidden>Une erreur est survenue. Veuillez réessayer.</p>
+          </div>
+        </div>
+      </form>
+      <div class="contact-success" id="contact-success" role="alert" aria-live="polite" hidden>
+        <div class="contact-success-icon" aria-hidden="true">✓</div>
+        <h3 class="h-3">Demande envoyée !</h3>
+        <p>Merci — on vous répond sous 24 h ouvrables pour planifier l'essai gratuit.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script is:inline>
+  // Défini de façon synchrone pour éviter la course avec le script Cloudflare.
+  window.onloadTurnstileCallback = function () {
+    const container = document.getElementById('cf-turnstile-container');
+    const turnstile = window.turnstile;
+    if (container && turnstile) {
+      const isMobile = window.innerWidth < 640;
+      turnstile.render(container, {
+        sitekey: container.getAttribute('data-sitekey'),
+        theme: 'light',
+        size: isMobile ? 'compact' : 'flexible',
+      });
+    }
+  };
+</script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('contact-form') as HTMLFormElement | null;
+    const success = document.getElementById('contact-success') as HTMLElement | null;
+    const genericError = document.getElementById('cf-error') as HTMLElement | null;
+    const turnstileError = document.getElementById('cf-turnstile-error') as HTMLElement | null;
+    const submitBtn = form?.querySelector('button[type="submit"]') as HTMLButtonElement | null;
+
+    const showError = (el: HTMLElement | null) => {
+      if (el) el.hidden = false;
+      if (submitBtn) submitBtn.disabled = false;
+    };
+
+    form?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (genericError) genericError.hidden = true;
+      if (turnstileError) turnstileError.hidden = true;
+
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+
+      // Turnstile exigé seulement si le widget est rendu (clé publique définie).
+      const hasWidget = !!form.querySelector('#cf-turnstile-container');
+      const turnstileToken = (form.querySelector('[name="cf-turnstile-response"]') as HTMLInputElement)?.value;
+      if (hasWidget && !turnstileToken) {
+        showError(turnstileError);
+        return;
+      }
+
+      if (submitBtn) submitBtn.disabled = true;
+
+      try {
+        const res = await fetch('/api/contact', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: (form.querySelector('#cf-name') as HTMLInputElement)?.value.trim(),
+            email: (form.querySelector('#cf-email') as HTMLInputElement)?.value.trim(),
+            phone: (form.querySelector('#cf-phone') as HTMLInputElement)?.value.trim(),
+            childAge: (form.querySelector('#cf-age') as HTMLSelectElement)?.value,
+            message: (form.querySelector('#cf-message') as HTMLTextAreaElement)?.value.trim(),
+            turnstileToken,
+            source: 'landing-contact',
+          }),
+        });
+        const data = (await res.json()) as { ok: boolean; error?: string };
+        if (data.ok) {
+          form.style.display = 'none';
+          if (success) success.hidden = false;
+        } else if (data.error === 'turnstile_failed') {
+          showError(turnstileError);
+        } else {
+          showError(genericError);
+        }
+      } catch {
+        showError(genericError);
+      }
+    });
+  });
+</script>
+
+<style>
+  .contact {
+    background: var(--paper);
+    border-top: 1px solid var(--line);
+  }
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.3fr;
+    gap: clamp(32px, 5vw, 72px);
+    align-items: start;
+  }
+  .contact-alt {
+    margin-top: 20px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+  }
+  .contact-card {
+    background: var(--white);
+    border: 1px solid var(--line-strong);
+    border-radius: var(--r-lg);
+    padding: clamp(24px, 3.5vw, 36px);
+  }
+  .field-opt {
+    font-weight: 400;
+    color: var(--ink-2);
+    font-size: 12px;
+  }
+  .contact-submit {
+    width: 100%;
+    justify-content: center;
+  }
+  .form-error {
+    font-size: 13px;
+    color: var(--warn);
+    margin: 10px 0 0;
+    padding: 8px 12px;
+    background: color-mix(in oklab, var(--warn) 8%, transparent);
+    border: 1px solid color-mix(in oklab, var(--warn) 25%, transparent);
+    border-radius: var(--r-sm);
+  }
+  .turnstile-wrapper {
+    display: flex;
+    justify-content: center;
+  }
+  #cf-turnstile-container {
+    max-width: 100%;
+    overflow: hidden;
+  }
+  #cf-turnstile-container :global(iframe) {
+    max-width: 100% !important;
+  }
+  .contact-success {
+    padding: 36px 28px;
+    text-align: center;
+    background: var(--accent-tint);
+    border: 1px solid var(--line-strong);
+    border-radius: var(--r-md);
+  }
+  .contact-success-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: var(--ok);
+    color: #fff;
+    display: grid;
+    place-items: center;
+    font-size: 22px;
+    font-weight: 700;
+    margin: 0 auto 20px;
+  }
+  .contact-success h3 {
+    margin-bottom: 10px;
+  }
+  .contact-success p {
+    color: var(--ink-2);
+    font-size: 15px;
+  }
+  @media (max-width: 900px) {
+    .contact-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
