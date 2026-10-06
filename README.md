@@ -38,6 +38,8 @@ y se crea en el primer deploy. Carga local: completar `.env` y correr
   Los tokens son single-use: el frontend hace `turnstile.reset()` tras
   cada intento fallido para permitir reintentos.
 - Dev local: `.env` define `TURNSTILE_HOSTNAMES=localhost,127.0.0.1,...`.
+- Nota: las variables de proyecto Pages se capturan al crearse el
+  deployment — cambiarlas exige un nuevo deploy (push a `main`).
 
 A futuro: Resend para el envío de mails (el código ya lo soporta y degrada
 si falta: el form responde `ok` sin enviar nada).
