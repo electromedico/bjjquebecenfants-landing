@@ -14,7 +14,9 @@ export async function onRequestPost(context) {
     return Response.json({ ok: false, error: 'missing_fields' }, { status: 400 });
   }
 
-  const expectedAction = 'contact';
+  // SOLO PARA E2E: el dummy token del test widget responde action "test".
+  // En main el valor real: 'contact'
+  const expectedAction = 'test';
   const expectedHostnames = new Set(
     (env.TURNSTILE_HOSTNAMES ?? '')
       .split(',')
