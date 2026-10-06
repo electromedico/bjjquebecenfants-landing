@@ -1,0 +1,74 @@
+---
+---
+
+<aside class="sticky-cta" id="sticky-cta" aria-label="Réserver un cours d'essai gratuit">
+  <a href="#contact" class="btn btn-accent sticky-cta-btn">Réserver un cours d'essai gratuit</a>
+</aside>
+
+<script is:inline>
+  (() => {
+    const bar = document.getElementById('sticky-cta');
+    const hero = document.getElementById('haut');
+    const contact = document.getElementById('contact');
+    const footer = document.querySelector('.site-footer');
+    if (!bar || !hero || !contact) return;
+
+    let pastHero = false;
+    let atContact = false;
+    let atFooter = false;
+
+    const update = () => {
+      bar.classList.toggle('is-visible', pastHero && !atContact && !atFooter);
+    };
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.target === hero) pastHero = !entry.isIntersecting;
+          if (entry.target === contact) atContact = entry.isIntersecting;
+          if (footer && entry.target === footer) atFooter = entry.isIntersecting;
+        }
+        update();
+      },
+      { threshold: 0 }
+    );
+    io.observe(hero);
+    io.observe(contact);
+    if (footer) io.observe(footer);
+  })();
+</script>
+
+<style>
+  .sticky-cta {
+    position: fixed;
+    inset-inline: 0;
+    bottom: 0;
+    z-index: 60;
+    padding: 12px 20px calc(12px + env(safe-area-inset-bottom));
+    background: color-mix(in oklab, var(--white) 94%, transparent);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid var(--line);
+    transform: translateY(110%);
+    transition: transform 0.25s ease;
+  }
+  .sticky-cta.is-visible {
+    transform: translateY(0);
+  }
+  .sticky-cta-btn {
+    display: block;
+    width: 100%;
+    justify-content: center;
+    padding: 15px 20px;
+    font-size: 15.5px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .sticky-cta {
+      transition: none;
+    }
+  }
+  @media (min-width: 760px) {
+    .sticky-cta {
+      display: none;
+    }
+  }
+</style>

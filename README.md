@@ -53,7 +53,7 @@ si falta: el form responde `ok` sin enviar nada).
 ## Estructura
 
 - `src/pages/` — rutas (`index.astro` = homepage FR).
-- `src/components/layout/` — `Layout`, `Header`, `Footer`.
-- `src/components/sections/` — Hero, Programs, Why, Faq, ContactForm.
+- `src/components/layout/` — `Layout`, `Header`, `Footer`, `StickyCta` (CTA fija abajo, mobile: libellé exacto, visible entre el hero y el formulario).
+- `src/components/sections/` — Hero, Programs, Why, Instructeurs, Temoignages, WhereAndWhen, Faq, ContactForm.
 - `src/styles/global.css` — sistema base (vars, botones, formularios).
 - `functions/api/contact.js` — Pages Function del formulario.

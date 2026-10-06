@@ -17,7 +17,7 @@ const links = [
         <a href={l.href}>{l.label}</a>
       ))}
     </nav>
-    <a href="#contact" class="btn btn-accent header-cta">Cours d'essai gratuit</a>
+    <a href="#contact" class="btn btn-accent header-cta">Réserver un cours d'essai gratuit</a>
   </div>
 </header>
 
@@ -84,8 +84,10 @@ const links = [
     .site-nav {
       display: none;
     }
+    /* Sur mobile, le CTA sticky en bas d'écran porte le libellé exact ;
+       l'en-tête reste épuré (marque seule). */
     .header-cta {
-      margin-left: auto;
+      display: none;
     }
   }
 </style>
