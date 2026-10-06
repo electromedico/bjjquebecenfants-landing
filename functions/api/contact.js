@@ -65,8 +65,8 @@ export async function onRequestPost(context) {
   }
 
   if (env.RESEND_API_KEY) {
-    const from = env.RESEND_FROM ?? 'BJJ Québec Enfants <info@bjjquebecenfants.ca>';
-    const to = env.RESEND_TO ?? 'info@bjjquebecenfants.ca';
+    const from = env.RESEND_FROM ?? 'BJJ Québec Enfants <noreply@mailhighway.com>';
+    const to = env.RESEND_TO ?? 'agent@mailhighway.com';
     const subject = `Cours d'essai — ${name}${childAge ? ` (enfant ${childAge} ans)` : ''}`;
     const text = [
       `Source: ${source}`,
@@ -77,11 +77,20 @@ export async function onRequestPost(context) {
       `Message: ${message || '—'}`,
     ].join('\n');
 
-    await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${env.RESEND_API_KEY}` },
-      body: JSON.stringify({ from, to, subject, text }),
-    });
+    let resendRes;
+    try {
+      resendRes = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${env.RESEND_API_KEY}` },
+        signal: AbortSignal.timeout(10_000),
+        body: JSON.stringify({ from, to, subject, text }),
+      });
+    } catch {
+      return Response.json({ ok: false, error: 'email_failed' }, { status: 502 });
+    }
+    if (!resendRes.ok) {
+      return Response.json({ ok: false, error: 'email_failed' }, { status: 502 });
+    }
   }
 
   return Response.json({ ok: true });

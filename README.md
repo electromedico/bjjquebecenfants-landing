@@ -41,8 +41,17 @@ y se crea en el primer deploy. Carga local: completar `.env` y correr
 - Nota: las variables de proyecto Pages se capturan al crearse el
   deployment — cambiarlas exige un nuevo deploy (push a `main`).
 
-A futuro: Resend para el envío de mails (el código ya lo soporta y degrada
-si falta: el form responde `ok` sin enviar nada).
+## Resend (envío de mails del formulario)
+
+- **Runtime** (variables del proyecto Pages, entornos production y preview):
+  - `RESEND_API_KEY` — API key de Resend (sensible; key restringida a solo envío).
+  - `RESEND_FROM` — remitente: `BJJ Québec Enfants <noreply@mailhighway.com>`
+    (dominio verificado en Resend).
+  - `RESEND_TO` — destino de los mensajes. Provisional:
+    `agent@mailhighway.com` (cambiar a la inbox definitiva cuando haya).
+- `functions/api/contact.js` degrada si falta `RESEND_API_KEY` (el form
+  responde `ok` sin enviar nada) y responde `502 email_failed` si Resend
+  rechaza el envío (no hay fallo silencioso).
 
 ## CI
 
