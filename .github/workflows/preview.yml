@@ -17,6 +17,9 @@ jobs:
       contents: read
       deployments: write
       pull-requests: write
+    env:
+      # Site key pública (no es secret): Astro la inlinea en el build.
+      PUBLIC_TURNSTILE_SITE_KEY: 0x4AAAAAAFOy-cw2on0i6VCN
 
     steps:
       - uses: actions/checkout@v4

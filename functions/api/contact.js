@@ -14,21 +14,52 @@ export async function onRequestPost(context) {
     return Response.json({ ok: false, error: 'missing_fields' }, { status: 400 });
   }
 
+  const expectedAction = 'contact';
+  const expectedHostnames = new Set(
+    (env.TURNSTILE_HOSTNAMES ?? '')
+      .split(',')
+      .map((h) => h.trim())
+      .filter(Boolean),
+  );
+  const hostnameAllowed = (hostname) =>
+    typeof hostname === 'string' &&
+    [...expectedHostnames].some((h) =>
+      h.startsWith('*.') ? hostname.endsWith(h.slice(1)) : hostname === h,
+    );
+
   if (turnstileToken && env.TURNSTILE_SECRET_KEY) {
-    const verifyRes = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams({ secret: env.TURNSTILE_SECRET_KEY, response: turnstileToken }).toString(),
-    });
-    const turnstileData = await verifyRes.json();
-    if (!turnstileData.success) {
+    let turnstileData;
+    try {
+      const verifyRes = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        signal: AbortSignal.timeout(10_000),
+        body: new URLSearchParams({
+          secret: env.TURNSTILE_SECRET_KEY,
+          response: turnstileToken,
+          remoteip: request.headers.get('cf-connecting-ip') ?? '',
+        }).toString(),
+      });
+      if (!verifyRes.ok) throw new Error(`siteverify ${verifyRes.status}`);
+      turnstileData = await verifyRes.json();
+    } catch {
+      return Response.json({ ok: false, error: 'turnstile_failed' }, { status: 400 });
+    }
+
+    if (
+      typeof turnstileToken !== 'string' ||
+      turnstileToken.length === 0 ||
+      turnstileToken.length > 2048 ||
+      !turnstileData.success ||
+      turnstileData.action !== expectedAction ||
+      !hostnameAllowed(turnstileData.hostname)
+    ) {
       return Response.json(
         {
           ok: false,
           error: 'turnstile_failed',
           details: turnstileData['error-codes'] || [],
-        },
-        { status: 400 }
+        }, { status: 400 }
       );
     }
   }

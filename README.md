@@ -23,8 +23,24 @@ El proyecto Pages se llama como el repo (`github.event.repository.name`)
 y se crea en el primer deploy. Carga local: completar `.env` y correr
 `./scripts/load-gh-secrets.sh`.
 
-A futuro: Turnstile + Resend para el formulario (el código ya los soporta
-y degrada si faltan: sin widget, sin envío, pero el form responde `ok`).
+## Turnstile (formulario de contacto)
+
+- **Site key** (pública): hardcodeada en los workflows
+  (`PUBLIC_TURNSTILE_SITE_KEY`); Astro la inlinea en el build y el widget
+  se renderiza en `ContactForm.astro` con `action: contact`.
+- **Runtime** (variables del proyecto Pages, entornos production y preview):
+  - `TURNSTILE_SECRET_KEY` — secret key del widget (sensible).
+  - `TURNSTILE_HOSTNAMES` — allowlist exacta de hostnames que siteverify
+    acepta (soporta sufijos `*.`). En prod: dominios reales del site;
+    nunca `localhost`.
+- Verificación server-side en `functions/api/contact.js`: exige
+  `success === true`, `action === contact` y hostname en la allowlist.
+  Los tokens son single-use: el frontend hace `turnstile.reset()` tras
+  cada intento fallido para permitir reintentos.
+- Dev local: `.env` define `TURNSTILE_HOSTNAMES=localhost,127.0.0.1,...`.
+
+A futuro: Resend para el envío de mails (el código ya lo soporta y degrada
+si falta: el form responde `ok` sin enviar nada).
 
 ## CI
 

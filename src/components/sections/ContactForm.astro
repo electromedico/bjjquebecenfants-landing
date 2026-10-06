@@ -77,8 +77,9 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? '';
     const turnstile = window.turnstile;
     if (container && turnstile) {
       const isMobile = window.innerWidth < 640;
-      turnstile.render(container, {
+      window.turnstileWidgetId = turnstile.render(container, {
         sitekey: container.getAttribute('data-sitekey'),
+        action: 'contact',
         theme: 'light',
         size: isMobile ? 'compact' : 'flexible',
       });
@@ -99,7 +100,15 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? '';
       if (submitBtn) submitBtn.disabled = false;
     };
 
-    form?.addEventListener('submit', async (e) => {
+    // Tokens Turnstile son single-use: resetea el widget tras un intento
+  // fallido para que el usuario pueda reintentar con un token fresco.
+  const resetTurnstile = () => {
+    const t = (window as any).turnstile;
+    const id = (window as any).turnstileWidgetId;
+    if (t && id != null) t.reset(id);
+  };
+
+  form?.addEventListener('submit', async (e) => {
       e.preventDefault();
       if (genericError) genericError.hidden = true;
       if (turnstileError) turnstileError.hidden = true;
@@ -138,11 +147,14 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? '';
           form.style.display = 'none';
           if (success) success.hidden = false;
         } else if (data.error === 'turnstile_failed') {
+          resetTurnstile();
           showError(turnstileError);
         } else {
+          resetTurnstile();
           showError(genericError);
         }
       } catch {
+        resetTurnstile();
         showError(genericError);
       }
     });
