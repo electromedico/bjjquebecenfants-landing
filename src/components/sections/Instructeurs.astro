@@ -1,0 +1,48 @@
+---
+---
+
+<section class="section instructeurs" id="instructeurs">
+  <div class="container">
+    <p class="eyebrow">Vos instructeurs</p>
+    <h2 class="h-1" style="margin-top: 14px; max-width: 18ch;">L'équipe qui encadre vos enfants.</h2>
+    <figure class="team-figure">
+      <div class="team-placeholder" role="img" aria-label="Photo de groupe de l'équipe d'instructeurs, à venir">
+        Photo de groupe — à venir
+      </div>
+      <figcaption>
+        Un maître ceinture noire et quatre sous-coachs. Noms et ceintures
+        arrivent avec la photo.
+      </figcaption>
+    </figure>
+  </div>
+</section>
+
+<style>
+  .team-figure {
+    margin: 40px 0 0;
+  }
+  .team-placeholder {
+    aspect-ratio: 16 / 7;
+    border: 1.5px dashed var(--line-strong);
+    border-radius: var(--r-lg);
+    background: var(--paper);
+    display: grid;
+    place-items: center;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+  }
+  .team-figure figcaption {
+    margin-top: 14px;
+    color: var(--ink-2);
+    font-size: 15px;
+    max-width: 60ch;
+  }
+  @media (max-width: 640px) {
+    .team-placeholder {
+      aspect-ratio: 4 / 3;
+    }
+  }
+</style>

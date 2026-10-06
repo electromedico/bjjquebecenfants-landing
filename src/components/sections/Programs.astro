@@ -8,15 +8,9 @@ const groups = [
   },
   {
     num: '02',
-    ages: '7–9 ans',
-    name: 'Kids',
-    text: 'Positions, contrôles et premières soumissions en douceur. On y apprend à persévérer, à perdre sans se décourager et à aider son partenaire.',
-  },
-  {
-    num: '03',
-    ages: '10–12 ans',
-    name: 'Juniors',
-    text: 'Technique complète, transitions et sparring léger encadré. Le groupe qui prépare, pour ceux qui veulent, la transition vers les cours ados.',
+    ages: '6 ans et plus',
+    name: 'Cadets',
+    text: 'Positions, contrôles et premières soumissions en douceur, jusqu\'au sparring léger encadré. On y apprend à persévérer, à perdre sans se décourager et à aider son partenaire — avec, pour ceux qui veulent, la porte ouverte vers les cours ados.',
   },
 ];
 ---
@@ -24,7 +18,7 @@ const groups = [
 <section class="section" id="programmes">
   <div class="container">
     <p class="eyebrow">Programmes</p>
-    <h2 class="h-1" style="margin-top: 14px; max-width: 16ch;">Un groupe pour chaque âge, un rythme pour chacun.</h2>
+    <h2 class="h-1" style="margin-top: 14px; max-width: 16ch;">Deux groupes, un rythme pour chacun.</h2>
     <div class="program-rows">
       {groups.map((g) => (
         <article class="program-row">
@@ -37,6 +31,11 @@ const groups = [
         </article>
       ))}
     </div>
+    <p class="programs-note">
+      Si votre enfant est grand pour son âge, il pourra être dirigé vers le
+      groupe principal BJJ Québec —
+      <a href="https://bjjquebec.com/" target="_blank" rel="noopener">bjjquebec.com</a>.
+    </p>
   </div>
 </section>
 
@@ -73,6 +72,22 @@ const groups = [
   .program-body p:last-child {
     color: var(--ink-2);
     max-width: 62ch;
+  }
+  .programs-note {
+    margin: 24px 0 0;
+    padding: 14px 18px;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--r-md);
+    background: var(--paper);
+    color: var(--ink-2);
+    font-size: 15px;
+    max-width: 72ch;
+  }
+  .programs-note a {
+    color: var(--accent-ink);
+    font-weight: 600;
+    text-decoration-thickness: 1.5px;
+    text-underline-offset: 3px;
   }
   @media (max-width: 640px) {
     .program-row {

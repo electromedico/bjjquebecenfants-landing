@@ -1,0 +1,70 @@
+---
+const quotes = [
+  'parent d\'un élève',
+  'parent d\'une élève',
+  'parent d\'un élève',
+];
+---
+
+<section class="section temoignages" id="temoignages">
+  <div class="container">
+    <p class="eyebrow">Ce que disent les parents</p>
+    <h2 class="h-1" style="margin-top: 14px; max-width: 18ch;">La parole aux parents.</h2>
+    <div class="quote-cards">
+      {quotes.map((role) => (
+        <figure class="quote-card">
+          <blockquote>
+            « Un vrai témoignage remplacera ce texte. »
+          </blockquote>
+          <figcaption>— {role}</figcaption>
+        </figure>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .temoignages {
+    background: var(--paper);
+    border-block: 1px solid var(--line);
+  }
+  .quote-cards {
+    margin-top: 40px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+  .quote-card {
+    margin: 0;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--r-lg);
+    background: var(--white);
+    padding: 26px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+  .quote-card blockquote {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 17px;
+    line-height: 1.35;
+    color: var(--ink);
+    opacity: 0.55;
+  }
+  .quote-card figcaption {
+    margin-top: auto;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+  }
+  @media (max-width: 860px) {
+    .quote-cards {
+      grid-template-columns: 1fr;
+      max-width: 520px;
+    }
+  }
+</style>
